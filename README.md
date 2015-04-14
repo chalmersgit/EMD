@@ -1,0 +1,1 @@
+Computes EMD between distributions P and Q
