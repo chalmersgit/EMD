@@ -131,23 +131,22 @@ def getEMD(P,Q, norm = 2):
     
     return EMD(F, D)
     
-    
-    
 # returns: signature1[features][weights], signature2[features, weights]
 def getExampleSignatures():
-    features1 = np.array([ np.array([100, 40, 22]), 
-                          np.array([ 211, 20, 2 ]), 
-                          np.array([ 32, 190, 150 ]), 
-                          np.array([ 2, 100, 100 ]) ])
+    features1 = np.array([[100, 40, 22], 
+                          [ 211, 20, 2 ], 
+                          [ 32, 190, 150 ], 
+                          [ 2, 100, 100 ] ])
     weights1 = np.array([ 0.4, 0.3, 0.2, 0.1 ])
 
-    features2 = np.array([ np.array([ 0, 0, 0 ]), 
-                          np.array([ 50, 100, 80 ]), 
-                          np.array([ 255, 255, 255 ]) ])
+
+    features2 = np.array([ [ 0, 0, 0 ], 
+                           [ 50, 100, 80 ], 
+                           [ 255, 255, 255 ] ])
     weights2 = np.array([ 0.5, 0.3, 0.2 ])
     
-    signature1 = np.array([features1, weights1])
-    signature2 = np.array([features2, weights2])
+    signature1 = (features1, weights1)
+    signature2 = (features2, weights2)
     
     return signature1, signature2
 
@@ -156,7 +155,7 @@ if __name__ == '__main__':
     
     # Setup
     P, Q = getExampleSignatures()
-        
+
     # Get EMD
     emd = getEMD(P, Q)
     
