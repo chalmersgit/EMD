@@ -17,13 +17,50 @@ http://robotics.stanford.edu/~rubner/emd/default.htm
 import numpy as np
 import scipy.optimize
 
+# Constraints
+def positivity(f):
+    '''
+    Constraint 1: 
+    Ensures flow moves from source to target
+    '''
+    return f 
+
+def fromSrc(f, wp, i, shape):
+    """
+    Constraint 2: 
+    Limits supply for source according to weight
+    """
+    fr = np.reshape(f, shape)
+    f_sumColi = np.sum(fr[i,:])
+    return wp[i] - f_sumColi
+
+def toTgt(f, wq, j, shape):
+    """
+    Constraint 3: 
+    Limits demand for target according to weight
+    """
+    fr = np.reshape(f, shape)
+    f_sumRowj = np.sum(fr[:,j])
+    return wq[j] - f_sumRowj
+
+def maximiseTotalFlow(f, wp, wq): 
+    """
+    Constraint 4: 
+    Forces maximum supply to move from source to target
+    """
+    return f.sum() - np.minimum(wp.sum(), wq.sum())
+
+# Objective function
 def flow(f, D):
     """
     The objective function
+    The flow represents the amount of goods to be moved 
+    from source to target
     """
     f = np.reshape(f, D.shape)
     return (f * D).sum()
 
+# Distance
 def groundDistance(x1, x2, norm = 2):
     """
     L-norm distance
@@ -31,6 +68,7 @@ def groundDistance(x1, x2, norm = 2):
     """
     return np.linalg.norm(x1-x2, norm)
 
+# Distance matrix
 def getDistMatrix(s1, s2, norm = 2):
     """
     Computes the distance matrix between the source
@@ -49,6 +87,7 @@ def getDistMatrix(s1, s2, norm = 2):
     
     return distMatrix
     
+# Flow matrix
 def getFlowMatrix(P, Q, D):
     """
     Computes the flow matrix between P and Q
@@ -73,45 +112,14 @@ def getFlowMatrix(P, Q, D):
     
     return F
 
-# Constraints
-def positivity(f):
-    '''
-    Constraint 1: 
-    Ensures flow moves from source to target
-    '''
-    return f 
-
-def fromSrc(f, wp, i, shape):
-    """
-    Constraint 2: 
-    Limits supply from source according to weight
-    """
-    fr = np.reshape(f, shape)
-    f_sumColi = np.sum(fr[i,:])
-    return wp[i] - f_sumColi
-
-def toTgt(f, wq, j, shape):
-    """
-    Constraint 3: 
-    Limits supply to target according to weight
-    """
-    fr = np.reshape(f, shape)
-    f_sumRowj = np.sum(fr[:,j])
-    return wq[j] - f_sumRowj
-
-def maximiseTotalFlow(f, wp, wq): 
-    """
-    Constraint 4: 
-    Forces maximum supply to move from source to target
-    """
-    return f.sum() - np.minimum(wp.sum(), wq.sum())
-
+# Normalised EMD
 def EMD(F, D):  
     """
     EMD formula, normalised by the flow
     """
     return (F * D).sum() / F.sum()
-    
+  
+# Runs EMD program  
 def getEMD(P,Q, norm = 2):  
     """
     EMD computes the Earth Mover's Distance between
@@ -131,8 +139,11 @@ def getEMD(P,Q, norm = 2):
     
     return EMD(F, D)
     
-# returns: signature1[features][weights], signature2[features, weights]
+# Example 1
 def getExampleSignatures():
+    """
+    returns signature1[features][weights], signature2[features, weights]
+    """
     features1 = np.array([[100, 40, 22], 
                           [ 211, 20, 2 ], 
                           [ 32, 190, 150 ], 
@@ -144,6 +155,29 @@ def getExampleSignatures():
                            [ 50, 100, 80 ], 
                            [ 255, 255, 255 ] ])
     weights2 = np.array([ 0.5, 0.3, 0.2 ])
+    
+    signature1 = (features1, weights1)
+    signature2 = (features2, weights2)
+    
+    return signature1, signature2
+
+# Example 2
+def getExampleSignatures2():
+    """
+    returns signature1[features][weights], signature2[features, weights]
+    """
+    features1 = np.array([[100, 100, 0], 
+                          [ 110, 110, 0 ], 
+                          [ 120, 100, 0 ], 
+                          [ 130, 90, 0 ] ])
+    weights1 = np.array([ 0.4, 0.3, 0.2, 0.1 ])
+
+
+    features2 = np.array([[50, 50, 0], 
+                          [ 60, 60, 0 ], 
+                          [ 70, 50, 0 ], 
+                          [ 80, 40, 0 ] ])
+    weights2 = np.array([ 0.5, 0.3, 0.1, 0.1 ])
     
     signature1 = (features1, weights1)
     signature2 = (features2, weights2)
