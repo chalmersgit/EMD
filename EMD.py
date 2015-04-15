@@ -2,19 +2,39 @@
 Created on 11/04/2015
 
 @author: Andrew Chalmers
+
+This code computes the Earth Mover's Distance, as explained here:
+http://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/RUBNER/emd.htm
+
+There is a simple example of two distributions computed by getExampleSignatures()
+This example is chosen in order to compare the result with a C implementation 
+found here:
+http://robotics.stanford.edu/~rubner/emd/default.htm
 '''
 
 import numpy as np
 import scipy.optimize
 
 def flow(f, D):
+    """
+    The objective function
+    """
     f = np.reshape(f, D.shape)
     return (f * D).sum()
 
 def groundDistance(x1, x2, norm = 2):
+    """
+    L-norm distance
+    Default norm = 2
+    """
     return np.linalg.norm(x1-x2, norm)
 
 def getDistMatrix(s1, s2, norm = 2):
+    """
+    Computes the distance matrix between the source
+    and target distributions.
+    The ground distance is using the L-norm (default L2 norm)
+    """
     # rows = s1 feature length
     # cols = s2 feature length
     numFeats1 = s1[0].shape[0]
@@ -29,26 +49,43 @@ def getDistMatrix(s1, s2, norm = 2):
     
 # Constraints
 def positivity(f):
+    '''
+    Constraint 1: 
+    Ensures flow moves from Source to Target
+    '''
     return f 
 
 def fromSrc(f, wp, i, shape):
+    """
+    Constraint 2: 
+    Limits supply from source according to weight
+    """
     fr = np.reshape(f, shape)
     f_sumColi = np.sum(fr[i,:])
     return wp[i] - f_sumColi
 
 def toTgt(f, wq, j, shape):
+    """
+    Constraint 3: 
+    Limits supply to target according to weight
+    """
     fr = np.reshape(f, shape)
     f_sumRowj = np.sum(fr[:,j])
     return wq[j] - f_sumRowj
 
 def maximiseTotalFlow(f, wp, wq): 
+    """
+    Constraint 4: 
+    Forces maximum supply to move from source to target
+    """
     return f.sum() - np.minimum(wp.sum(), wq.sum())
 
-# EMD formula, normalised by the flow
 def EMD(F, D):  
+    """
+    EMD formula, normalised by the flow
+    """
     return (F * D).sum() / F.sum()
     
-# 
 def getEMD(P,Q, norm = 2):  
     """
     EMD computes the Earth Mover's Distance between
@@ -113,7 +150,8 @@ if __name__ == '__main__':
     # Get EMD
     emd = getEMD(P, Q)
     
-    print emd, '== 160.54277'
+    print 'We got:', emd
+    print 'C example got 160.54277'
     
     print 'Success'
     
