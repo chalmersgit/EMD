@@ -49,11 +49,35 @@ def getDistMatrix(s1, s2, norm = 2):
     
     return distMatrix
     
+def getFlowMatrix(P, Q, D):
+    """
+    Computes the flow matrix between P and Q
+    """
+    numFeats1 = P[0].shape[0]
+    numFeats2 = Q[0].shape[0]
+    shape = (numFeats1, numFeats2)
+    
+    # Constraints  
+    cons1 = [{'type':'ineq', 'fun' : positivity},
+             {'type':'eq', 'fun' : maximiseTotalFlow, 'args': (P[1], Q[1],)}]
+    
+    cons2 = [{'type':'ineq', 'fun' : fromSrc, 'args': (P[1], i, shape,)} for i in range(numFeats1)]
+    cons3 = [{'type':'ineq', 'fun' : toTgt, 'args': (Q[1], j, shape,)} for j in range(numFeats2)]
+    
+    cons = cons1 + cons2 + cons3
+
+    # Solve for F (solve transportation problem) 
+    F_guess = np.zeros(D.shape)
+    F = scipy.optimize.minimize(flow, F_guess, args=(D,), constraints=cons)
+    F = np.reshape(F.x, (numFeats1,numFeats2))
+    
+    return F
+
 # Constraints
 def positivity(f):
     '''
     Constraint 1: 
-    Ensures flow moves from Source to Target
+    Ensures flow moves from source to target
     '''
     return f 
 
@@ -103,27 +127,11 @@ def getEMD(P,Q, norm = 2):
     """  
     
     D = getDistMatrix(P, Q, norm)
-    
-    numFeats1 = P[0].shape[0]
-    numFeats2 = Q[0].shape[0]
-    shape = (numFeats1, numFeats2)
-    
-    # Constraints  
-    cons1 = [{'type':'ineq', 'fun' : positivity},
-             {'type':'eq', 'fun' : maximiseTotalFlow, 'args': (P[1], Q[1],)}]
-    
-    cons2 = [{'type':'ineq', 'fun' : fromSrc, 'args': (P[1], i, shape,)} for i in range(numFeats1)]
-    cons3 = [{'type':'ineq', 'fun' : toTgt, 'args': (Q[1], j, shape,)} for j in range(numFeats2)]
-    
-    cons = cons1 + cons2 + cons3
-    
-
-    # Solve for F (solve transportation problem) 
-    F_guess = np.zeros(D.shape)
-    F = scipy.optimize.minimize(flow, F_guess, args=(D,), constraints=cons)
-    F = np.reshape(F.x, (numFeats1,numFeats2))
+    F = getFlowMatrix(P, Q, D)
     
     return EMD(F, D)
+    
+    
     
 # returns: signature1[features][weights], signature2[features, weights]
 def getExampleSignatures():
