@@ -77,13 +77,13 @@ def getDistMatrix(s1, s2, norm = 2):
     """
     # rows = s1 feature length
     # cols = s2 feature length
-    numFeats1 = s1[0].shape[0]
-    numFeats2 = s2[0].shape[0]
+    numFeats1 = s1.shape[0]
+    numFeats2 = s2.shape[0]
     distMatrix = np.zeros((numFeats1, numFeats2))
 
     for i in range(0, numFeats1):
         for j in range(0, numFeats2):
-            distMatrix[i,j] = groundDistance(s1[0][i], s2[0][j], norm)
+            distMatrix[i,j] = groundDistance(s1[i], s2[j], norm)
     
     return distMatrix
     
@@ -134,7 +134,7 @@ def getEMD(P,Q, norm = 2):
     Default is the Euclidean norm (norm = 2)
     """  
     
-    D = getDistMatrix(P, Q, norm)
+    D = getDistMatrix(P[0], Q[0], norm)
     F = getFlowMatrix(P, Q, D)
     
     return EMD(F, D)
@@ -155,29 +155,6 @@ def getExampleSignatures():
                            [ 50, 100, 80 ], 
                            [ 255, 255, 255 ] ])
     weights2 = np.array([ 0.5, 0.3, 0.2 ])
-    
-    signature1 = (features1, weights1)
-    signature2 = (features2, weights2)
-    
-    return signature1, signature2
-
-# Example 2
-def getExampleSignatures2():
-    """
-    returns signature1[features][weights], signature2[features, weights]
-    """
-    features1 = np.array([[100, 100, 0], 
-                          [ 110, 110, 0 ], 
-                          [ 120, 100, 0 ], 
-                          [ 130, 90, 0 ] ])
-    weights1 = np.array([ 0.4, 0.3, 0.2, 0.1 ])
-
-
-    features2 = np.array([[50, 50, 0], 
-                          [ 60, 60, 0 ], 
-                          [ 70, 50, 0 ], 
-                          [ 80, 40, 0 ] ])
-    weights2 = np.array([ 0.5, 0.3, 0.1, 0.1 ])
     
     signature1 = (features1, weights1)
     signature2 = (features2, weights2)
