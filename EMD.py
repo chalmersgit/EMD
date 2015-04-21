@@ -142,7 +142,7 @@ def getEMD(P,Q, norm = 2):
 # Example 1
 def getExampleSignatures():
     """
-    returns signature1[features][weights], signature2[features, weights]
+    returns signature1[features][weights], signature2[features][weights]
     """
     features1 = np.array([[100, 40, 22], 
                           [ 211, 20, 2 ], 
@@ -170,6 +170,7 @@ if __name__ == '__main__':
     # Get EMD
     emd = getEMD(P, Q)
     
+    # Output result
     print 'We got:', emd
     print 'C example got 160.54277'
     
