@@ -12,4 +12,4 @@ This example is chosen in order to compare the result with a C implementation
 found here:
 http://robotics.stanford.edu/~rubner/emd/default.htm
 
-My code is not designed to be fast. It's designed to be verbose, making it easier to understand how solving for the EMD worked. I recommend using other packages like PyEMD or FastEMD if you want to use it in your projects.
+My code is not designed to be fast. It's designed to be verbose, making it easier to understand how solving for the EMD works. I recommend using other packages like PyEMD or FastEMD if you want to use it in your projects.
