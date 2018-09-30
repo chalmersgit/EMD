@@ -201,10 +201,10 @@ def getExample_GaussianHistograms(N = 15, showPlot = True):
 		plt.bar(x, y2, width=0.1, alpha=0.5)
 		plt.show()
 
-	features1 = y1.reshape((x.shape[0],1))
+	features1 = y1.reshape((N,1))
 	weights1 = (1.0/N) * np.ones((N))
 
-	features2 = y2.reshape((x.shape[0],1))
+	features2 = y2.reshape((N,1))
 	weights2 = (1.0/N) * np.ones((N))
 	
 	signature1 = (features1, weights1)
