@@ -17,6 +17,8 @@ http://robotics.stanford.edu/~rubner/emd/default.htm
 import numpy as np
 import scipy.optimize
 
+import matplotlib.pyplot as plt
+
 # Constraints
 def positivity(f):
 	'''
@@ -194,21 +196,24 @@ def getExample_GaussianHistograms(N = 15, showPlot = True):
 	x = np.linspace(-1,1,N)
 	y1 = np.exp(-np.power(x - 0.0, 2.0) / (2 * np.power(0.2, 2.0)))
 	y2 = np.exp(-np.power(x - 0.5, 2.0) / (2 * np.power(0.2, 2.0)))
+	y1 /= np.sum(y1)
+	y2 /= np.sum(y2)
 
 	if showPlot:
-		import matplotlib.pyplot as plt
 		plt.bar(x, y1, width=0.1, alpha=0.5)
 		plt.bar(x, y2, width=0.1, alpha=0.5)
-		plt.show()
 
-	features1 = y1.reshape((N,1))
-	weights1 = (1.0/N) * np.ones((N))
+	#features1 = y1.reshape((N,1))
+	#weights1 = (1.0/N) * np.ones((N))
 
-	features2 = y2.reshape((N,1))
-	weights2 = (1.0/N) * np.ones((N))
+	#features2 = y2.reshape((N,1))
+	#weights2 = (1.0/N) * np.ones((N))
 	
-	signature1 = (features1, weights1)
-	signature2 = (features2, weights2)
+	#signature1 = (features1, weights1)
+	#signature2 = (features2, weights2)
+
+	signature1 = (x.reshape((N,1)), y1.reshape((N,1)))
+	signature2 = (x.reshape((N,1)), y2.reshape((N,1)))
 	
 	return signature1, signature2
 
@@ -224,14 +229,20 @@ def doRubnerComparisonExample():
 	print('Rubner C example got 160.54277')
 
 def doGaussianHistogramExample():
+	showPlot = True
+
 	# Setup
-	P, Q = getExample_GaussianHistograms()
+	P, Q = getExample_GaussianHistograms(showPlot=showPlot)
 
 	# Get EMD
 	emd = getEMD(P, Q)
 	
 	# Output result
 	print('EMD: '+str(emd))
+
+	if showPlot:
+		plt.show()
+
 
 if __name__ == '__main__':
 	print('EMD')
